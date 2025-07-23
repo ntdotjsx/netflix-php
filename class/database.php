@@ -1,44 +1,43 @@
 <?php
 $DATABASE = new class {
-    private $host = "localhost";
-    private $db_name = "your_database";
-    private $username = "your_username";
-    private $password = "your_password";
-    private $conn;
+    private $host = 'localhost';
+    private $dbname = 'eiei';
+    private $username = 'root';
+    private $password = '';
+    private $pdo;
 
-    public function __construct($host = null, $db_name = null, $username = null, $password = null)
+    public function __construct()
     {
-        if ($host)
-            $this->host = $host;
-        if ($db_name)
-            $this->db_name = $db_name;
-        if ($username)
-            $this->username = $username;
-        if ($password)
-            $this->password = $password;
-    }
-
-    // เชื่อมต่อฐานข้อมูล
-    public function connect()
-    {
-        $this->conn = null;
-
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset=utf8mb4";
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ];
-
-            $this->conn = new PDO($dsn, $this->username, $this->password, $options);
+            $this->pdo = new PDO(
+                "mysql:host=$this->host;dbname=$this->dbname",
+                $this->username,
+                $this->password
+            );
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            echo "Connection error: " . $e->getMessage();
-            exit;
+            die("Connection failed: " . $e->getMessage());
         }
-
-        return $this->conn;
     }
-}
+
+    public function query($sql, $params = [])
+    {
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    public function fetch($sql, $params = [])
+    {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetch();
+    }
+
+    public function fetchAll($sql, $params = [])
+    {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetchAll();
+    }
+};
 
 ?>

@@ -2,6 +2,9 @@
 <link rel="stylesheet" href="styles/global.css">
 <?php
 require_once 'class/route.php';
+require_once 'class/database.php';
+$users = $DATABASE->fetchAll("SELECT * FROM users");
+var_dump($users);
 $ROUTE->route('/', fn() => include 'views/home.php');
 $ROUTE->route('/test', fn() => include 'views/movie/[play]/route.php');
 $ROUTE->route('/play', fn() => include 'views/movie/[play]/route.php');
