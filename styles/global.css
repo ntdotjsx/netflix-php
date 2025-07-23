@@ -1,0 +1,17 @@
+:root {
+    --bg-main: black
+}
+
+body {
+    background: var(--bg-main);
+    color: white;
+}
+
+/* .plyr {
+  border-radius: 4px;
+  margin-bottom: 15px;
+} */
+
+.plyr__control--overlaid {
+    background: none !important;
+}
