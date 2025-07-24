@@ -1,0 +1,8 @@
+<script id="movie-template" type="text/template">
+{{#movies}}
+  <a href="play?id={{id}}" class="rounded text-white relative overflow-hidden">
+    <div class="block bg-cover bg-center aspect-[14/19]" style="background-image: url('assets/title/{{images.0}}');"></div>
+    <div class="absolute top-4 left-4 w-5 h-8 bg-cover bg-center" style="background-image: url('assets/brand/logo.png');"></div>
+  </a>
+{{/movies}}
+</script>

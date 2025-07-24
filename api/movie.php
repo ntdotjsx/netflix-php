@@ -1,41 +1,35 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
+require_once '../class/database.php';
 
-function encodeToken($path) {
-    return base64_encode($path);
+function encodeToken($path)
+{
+    $key = 'netflix-1234567890123456';
+    $iv = substr(hash('sha256', 'your-iv-string'), 0, 16);
+    $cipher = openssl_encrypt($path, 'AES-256-CBC', $key, 0, $iv);
+    return base64_encode($cipher);
 }
 
-$movies = [
-    [
-        'id' => 1,
-        'title' => 'The Shawshank Redemption',
-        'year' => 1994,
-        'genre' => 'Drama',
-        'trailer' => 'https://www.youtube.com/watch?v=6hB3S9bIaco',
-        'video_token' => encodeToken('content/shawshank.mp4')
-    ],
-    [
-        'id' => 2,
-        'title' => 'Inception',
-        'year' => 2010,
-        'genre' => 'Sci-Fi',
-        'trailer' => 'https://www.youtube.com/watch?v=YoHD9XEInc0',
-        'video_token' => encodeToken('content/inception.mp4')
-    ],
-    [
-        'id' => 3,
-        'title' => 'Interstellar',
-        'year' => 2014,
-        'genre' => 'Adventure',
-        'trailer' => 'https://www.youtube.com/watch?v=zSWdZVtXT7E',
-        'video_token' => encodeToken('content/interstellar.mp4')
-    ],
-];
+$MOVIE = $DATABASE->fetchAll("SELECT * FROM movies");
+
+foreach ($MOVIE as &$movie) {
+    // แปลง images จาก string ให้เป็น array
+    if (isset($movie['images']) && is_string($movie['images'])) {
+        $movie['images'] = json_decode($movie['images'], true);
+    }
+
+    // เข้ารหัส video_token แทน video_url
+    $movie['video_token'] = encodeToken($movie['video_url']);
+    unset($movie['video_url']);
+}
+unset($movie);
+
+unset($movie);
 
 if (isset($_GET['id'])) {
-    $id = (int) $_GET['id'];
+    $id = $_GET['id'];
     $found = null;
-    foreach ($movies as $movie) {
+    foreach ($MOVIE as $movie) {
         if ($movie['id'] === $id) {
             $found = $movie;
             break;
@@ -48,5 +42,7 @@ if (isset($_GET['id'])) {
         echo json_encode(['error' => 'Movie not found']);
     }
 } else {
-    echo json_encode($movies);
+    echo json_encode($MOVIE);
 }
+
+?>

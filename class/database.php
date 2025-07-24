@@ -36,7 +36,7 @@ $DATABASE = new class {
     public function fetchAll($sql, $params = [])
     {
         $stmt = $this->query($sql, $params);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 };
 
